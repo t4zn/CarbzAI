@@ -3,7 +3,9 @@ from flask_cors import CORS
 import os
 import google.generativeai as genai
 from dotenv import load_dotenv
-from google.cloud import vision
+import pytesseract
+from PIL import Image
+from pdf2image import convert_from_path
 import io
 import tempfile
 
@@ -49,28 +51,15 @@ def ocr():
         file = request.files['file']
         filename = file.filename.lower()
         text = ''
-        client = vision.ImageAnnotatorClient()
         if filename.endswith('.pdf'):
             with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as temp_pdf:
                 file.save(temp_pdf.name)
-                with io.open(temp_pdf.name, 'rb') as pdf_file:
-                    content = pdf_file.read()
-                mime_type = 'application/pdf'
-                input_config = vision.InputConfig(content=content, mime_type=mime_type)
-                features = [vision.Feature(type_=vision.Feature.Type.DOCUMENT_TEXT_DETECTION)]
-                request_ = vision.AnnotateFileRequest(
-                    input_config=input_config,
-                    features=features,
-                )
-                response = client.annotate_file(requests=[request_])
-                for resp in response.responses:
-                    if resp.full_text_annotation.text:
-                        text += resp.full_text_annotation.text + '\n'
+                images = convert_from_path(temp_pdf.name)
+                for img in images:
+                    text += pytesseract.image_to_string(img) + '\n'
         else:
-            image = vision.Image(content=file.read())
-            response = client.document_text_detection(image=image)
-            if response.full_text_annotation.text:
-                text = response.full_text_annotation.text
+            img = Image.open(file.stream)
+            text = pytesseract.image_to_string(img)
         return jsonify({'text': text.strip()})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
