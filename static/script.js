@@ -125,20 +125,17 @@ async function handleFileUpload(file) {
     scanPopup.classList.add('hidden');
 }
 
-// Dark mode toggle
 function setDarkMode(enabled) {
-    const sunIcon = 'https://img.icons8.com/ios-filled/50/000000/sun--v1.png';
-    const moonIcon = 'https://img.icons8.com/ios-filled/50/000000/crescent-moon.png';
-
     if (enabled) {
         body.classList.add('dark-mode');
-        darkModeIcon.src = sunIcon; // show sun
+        darkModeToggle.textContent = '☀️';
     } else {
         body.classList.remove('dark-mode');
-        darkModeIcon.src = moonIcon; // show moon
+        darkModeToggle.textContent = '🌙';
     }
     localStorage.setItem('darkMode', enabled ? '1' : '0');
 }
+
 darkModeToggle.onclick = () => {
     setDarkMode(!body.classList.contains('dark-mode'));
 };
