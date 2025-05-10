@@ -3,11 +3,9 @@ from flask_cors import CORS
 import os
 import google.generativeai as genai
 from dotenv import load_dotenv
-import easyocr
-import numpy as np
-from PIL import Image
-from pdf2image import convert_from_bytes
+from google.cloud import vision
 import io
+from PIL import Image
 import tempfile
 
 load_dotenv()
@@ -22,8 +20,6 @@ genai.configure(api_key=API_KEY)
 
 # Create a Generative Model instance
 model = genai.GenerativeModel('gemini-1.5-flash')  # or 'gemini-pro'
-
-reader = easyocr.Reader(['en'], gpu=False)
 
 # Route to serve the HTML page
 @app.route('/')
@@ -54,15 +50,28 @@ def ocr():
         file = request.files['file']
         filename = file.filename.lower()
         text = ''
+        client = vision.ImageAnnotatorClient()
         if filename.endswith('.pdf'):
-            images = convert_from_bytes(file.read())
-            for img in images:
-                result = reader.readtext(np.array(img), detail=0, paragraph=True)
-                text += '\n'.join(result) + '\n'
+            with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as temp_pdf:
+                file.save(temp_pdf.name)
+                with io.open(temp_pdf.name, 'rb') as pdf_file:
+                    content = pdf_file.read()
+                mime_type = 'application/pdf'
+                input_config = vision.InputConfig(content=content, mime_type=mime_type)
+                features = [vision.Feature(type_=vision.Feature.Type.DOCUMENT_TEXT_DETECTION)]
+                request_ = vision.AnnotateFileRequest(
+                    input_config=input_config,
+                    features=features,
+                )
+                response = client.annotate_file(requests=[request_])
+                for resp in response.responses:
+                    if resp.full_text_annotation.text:
+                        text += resp.full_text_annotation.text + '\n'
         else:
-            img = Image.open(file.stream)
-            result = reader.readtext(np.array(img), detail=0, paragraph=True)
-            text = '\n'.join(result)
+            image = vision.Image(content=file.read())
+            response = client.document_text_detection(image=image)
+            if response.full_text_annotation.text:
+                text = response.full_text_annotation.text
         return jsonify({'text': text.strip()})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
