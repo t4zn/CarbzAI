@@ -126,20 +126,21 @@ async function handleFileUpload(file) {
 }
 
 // Dark mode toggle
-const darkModeToggle = document.getElementById('dark-mode-toggle');
-const body = document.body;
 function setDarkMode(enabled) {
     const sunIcon = 'https://img.icons8.com/ios-filled/50/000000/sun--v1.png';
     const moonIcon = 'https://img.icons8.com/ios-filled/50/000000/crescent-moon.png';
 
     if (enabled) {
         body.classList.add('dark-mode');
-        darkModeIcon.src = sunIcon; // swap to sun
+        darkModeIcon.src = sunIcon; // show sun
     } else {
         body.classList.remove('dark-mode');
-        darkModeIcon.src = moonIcon; // swap to moon
+        darkModeIcon.src = moonIcon; // show moon
     }
     localStorage.setItem('darkMode', enabled ? '1' : '0');
+}
+darkModeToggle.onclick = () => {
+    setDarkMode(!body.classList.contains('dark-mode'));
 };
 
 // Load preference on page load
