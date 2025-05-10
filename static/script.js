@@ -60,12 +60,13 @@ chatForm.onsubmit = async function(e) {
     chatInput.value = '';
     chatBody.scrollTop = chatBody.scrollHeight;
 
-    // Send to backend
+    // Show loading bot message
     const botDiv = document.createElement('div');
     botDiv.className = 'bot-message';
     botDiv.textContent = '...';
     chatBody.appendChild(botDiv);
     chatBody.scrollTop = chatBody.scrollHeight;
+
     try {
         const res = await fetch('/api/ask', {
             method: 'POST',
@@ -123,3 +124,28 @@ async function handleFileUpload(file) {
     }
     scanPopup.classList.add('hidden');
 }
+
+// Dark mode toggle
+const darkModeToggle = document.getElementById('dark-mode-toggle');
+const body = document.body;
+
+function setDarkMode(enabled) {
+    if (enabled) {
+        body.classList.add('dark-mode');
+        darkModeToggle.textContent = '☀️';
+    } else {
+        body.classList.remove('dark-mode');
+        darkModeToggle.textContent = '🌙';
+    }
+    localStorage.setItem('darkMode', enabled ? '1' : '0');
+}
+
+darkModeToggle.onclick = () => {
+    setDarkMode(!body.classList.contains('dark-mode'));
+};
+
+// Load preference on page load
+window.addEventListener('DOMContentLoaded', () => {
+    const darkPref = localStorage.getItem('darkMode') === '1';
+    setDarkMode(darkPref);
+});
