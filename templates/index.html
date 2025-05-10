@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Carbz</title>
+    <link href="https://fonts.googleapis.com/css?family=Inter:400,500,600,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- Welcome Screen -->
+    <div id="welcome-screen" class="centered-screen">
+        <h1 class="brand">Carbz</h1>
+        <p class="subtitle">Track what you eat. Effortlessly.</p>
+        <button id="get-started-btn" class="main-btn">Get Started</button>
+        <footer>Carbz – Created by Taizun</footer>
+    </div>
+
+    <!-- Main Menu -->
+    <div id="main-menu" class="centered-screen hidden">
+        <h1 class="brand">Carbz</h1>
+        <button id="scan-food-btn" class="main-btn large-btn">
+            <img src="/static/img/camera.png" alt="Camera" class="icon-img" />
+            <span>
+                <strong>Scan Food</strong><br>
+                <small>Upload image or nutrition label</small>
+            </span>
+        </button>
+        <button id="ask-anything-btn" class="main-btn large-btn">
+            <img src="/static/img/chat.png" alt="Chat" class="icon-img" />
+            <span>
+                <strong>Ask Anything</strong><br>
+                <small>Chat about nutrition</small>
+            </span>
+        </button>
+        <footer>Carbz – Created by Taizun</footer>
+    </div>
+
+    <!-- Scan Food Popup -->
+    <div id="scan-popup" class="modal hidden">
+        <div class="modal-content">
+            <h2>Upload Food Image</h2>
+            <div class="upload-box">
+                <input type="file" id="file-upload" accept=".jpg,.jpeg,.png,.pdf" hidden>
+                <label for="file-upload" class="upload-label">
+                    <div class="upload-icon">&#8682;</div>
+                    <div>Click to upload or drag and drop</div>
+                    <div class="upload-types">JPG, PNG, or PDF</div>
+                </label>
+            </div>
+            <div class="modal-actions">
+                <button class="cancel-btn" id="cancel-scan">Cancel</button>
+                <button class="photo-btn" id="take-photo"><span class="icon">&#128247;</span> Take Photo</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Popup -->
+    <div id="chat-popup" class="modal hidden">
+        <div class="modal-content chat-modal">
+            <div class="chat-header">
+                <span>Nutrition Assistant</span>
+                <button class="close-btn" id="close-chat">&larr;</button>
+            </div>
+            <div class="chat-body" id="chat-body">
+                <div class="bot-message">Hello! Ask me anything about nutrition.</div>
+            </div>
+            <form id="chat-form" class="chat-footer">
+                <input type="text" id="chat-input" placeholder="Ask about nutrition..." autocomplete="off" required>
+                <button type="submit" class="send-btn">Send</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
+
+
+
